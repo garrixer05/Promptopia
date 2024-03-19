@@ -12,7 +12,7 @@ const Form = ({ type, post, setPost, submitting, handleSubmit }) => {
         imagination run wild with any AI-powered platform.
       </p>
       <form
-        onSubmit={e=>handleSubmit(e)}
+        onSubmit={(e) => handleSubmit(e)}
         className="mt-10 w-full max-w-2xl flex flex-col gap-7 glassmorphism"
         action=""
       >
@@ -47,7 +47,11 @@ const Form = ({ type, post, setPost, submitting, handleSubmit }) => {
           <Link href="/" className="text-gray-500 text-sm">
             Cancel
           </Link>
-          <button className="px-5 py-1.5 text-sm bg-primary-orange rounded-full text-white" type="submit" disabled={submitting} >
+          <button
+            className="px-5 py-1.5 text-sm bg-primary-orange rounded-full text-white"
+            type="submit"
+            disabled={submitting}
+          >
             {submitting ? `${type}...` : type}
           </button>
         </div>

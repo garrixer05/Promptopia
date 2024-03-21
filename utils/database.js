@@ -8,7 +8,7 @@ export const connectDb = async ()=>{
         return; 
     }
     try {
-        await mongoose.connect(process.env.MONGODB_URI,{
+        await mongoose.connect(process.env.MONGODB_URI || "mongodb://127.0.0.1:27017",{
             dbName:"Promtopia",
         });
         isConnected = true;

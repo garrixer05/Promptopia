@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import PromptCard from "./PromptCard";
+import { searchByEmail, searchByTag, searchByUsername, searchInPompt } from "@utils/searchFuncs";
 
 const PromptCardList = ({ data, handleTagClick }) => {
   return (
@@ -30,38 +31,26 @@ const obj = {
     promptArr: [],
   },
 };
+let timeOut;
 
 const Feed = () => {
-  const [searchText, setsearchText] = useState("");
-  const [forSearch, setforSearch] = useState({
-    creators: {
-      id: [],
-      username: [],
-      email: [],
-    },
-    tag: {
-      id: [],
-      tagArr: [],
-    },
-    prompts: {
-      id: [],
-      promptArr: [],
-    },
-  });
   const [posts, setposts] = useState([]);
+  const [postsCache, setPostsCache] = useState([])
+  const [searchText, setsearchText] = useState("");
+  const [forSearch, setforSearch] = useState(obj);
 
   useEffect(() => {
     const fetchPosts = async () => {
       const response = await fetch("/api/prompt");
       const data = await response.json();
       setposts(data);
+      setPostsCache(data);
     };
     fetchPosts();
   }, []);
 
   const fillSearch = () => {
     let N = obj;
-    console.log(obj);
     for (let post of posts) {
       N.creators.id.push(post.creator._id);
       N.creators.username.push(post.creator.username);
@@ -77,14 +66,64 @@ const Feed = () => {
   };
 
   const handleSearchChange = (e) => {
-    fillSearch();
     e.preventDefault();
     setsearchText(e.target.value);
-    setTimeout(() => {
+  };
+  const handleKeyUp = (e)=>{
+    fillSearch();
+    if (timeOut){
+      clearTimeout(timeOut)
+    }
+    timeOut = setTimeout(() => {
       if (searchText) {
+        const {creators, tag:{tagArr}} = forSearch;
+        let newPostObj = {
+          byUsername:[],
+          byEmail:[],
+          byTag:[]
+        }
+        for (let i=0; i<creators.email.length; i++){
+          let username = creators.username[i]
+          if(username.toLowerCase().match(searchText)){
+            let newPosts = searchByUsername(username, posts);
+            newPostObj.byUsername.push(...newPosts)
+            break;
+          }
+        }
+        for(let i=0; i<creators.email.length;i++){
+
+          let email = creators.email[i]
+         if(email.match(searchText)){
+           let newPosts = searchByEmail(email,posts);
+           newPostObj.byEmail.push(...newPosts)
+           break;
+         }
+        }
+        for (let i=0;i<tagArr.length; i++){
+          if (tagArr[i].match(searchText)){
+            let newPosts = searchByTag(tagArr[i],posts);
+            newPostObj.byTag.push(...newPosts)
+            break;
+          }
+        }
+        let newPosts = searchInPompt(searchText,posts);
+
+        setposts(
+          [...newPosts,
+          ...newPostObj.byEmail,
+          ...newPostObj.byUsername,
+          ...newPostObj.byTag
+        ]);
+      }else{
+        setposts(postsCache)
       }
     }, 1000);
-  };
+  }
+  const handleTagClick = (e)=>{
+    setsearchText(e)
+    const newPosts = searchByTag(e, posts);
+    setposts(newPosts);
+  }
 
   return (
     <section className="feed">
@@ -97,12 +136,13 @@ const Feed = () => {
           placeholder="Search for a tag or username"
           value={searchText}
           onChange={handleSearchChange}
+          onKeyUp={handleKeyUp}
           required
           className="search_input peer"
           type="text"
         />
       </form>
-      <PromptCardList data={posts} handleTagClick={() => {}} />
+      <PromptCardList data={posts} handleTagClick={handleTagClick} />
     </section>
   );
 };

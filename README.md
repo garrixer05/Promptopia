@@ -18,6 +18,9 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+This project uses [`next/font`](https://ne![Screenshot_20240322_181140](https://github.com/garrixer05/promptopia/assets/69009220/7204dfca-145e-48b4-957a-fdd387468554)
+xtjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+
+### Create or save your useful prompts and share with other users.
 
 
